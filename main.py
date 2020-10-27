@@ -1,24 +1,18 @@
 import random
-
-print('Let\'s play hangman')
-#list of words that could randomly be selected
+wrong_choices_allowed = 9
+guessed_letters = []
 word_bank = ('desk', 'phone', 'harpie', 'microphone', 'kazoomaniafool', 'football')
 
-#wrote this alphabet list to pop off letters guessed so I could tell them if they have already guessed it.
-alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
-guessed_letters = []
-
-#function to select the hangman word from the word_bank
 def bank():
   chosen_word = random.choice(word_bank)
   return chosen_word
 
 word = bank()
+def get_guesses_remaining():
+  wrong_choices_allowed - len(set(guessed_letters) - set(word))
 
-#counter to decrement which each wrong choice.  Not implemented yet.
-count = 10
-#word_length = len(word())
+print('Let\'s play hangman')
+
 dash_word = ['_ '] * len(word)
 
 def display_word():
@@ -30,6 +24,16 @@ def display_word():
       display += "_ "
   print(display)
   print()
+
+def return_word():
+  display = " "
+  for letter in word:
+    if guessed_letters.count(letter):
+      display += letter + " "
+    else:
+      display += "_ "
+  return display
+
   
 
 def guessed(letter):
@@ -43,23 +47,35 @@ def guessed(letter):
 def check_letter(letter):
   if letter in word:
     print(f'You guessed one, {letter} is in the word.')
-  else:
-    nonlocal count -=1
-    print(f'Nope! {letter} is not in this word. You have {counter} guesses left')
-    
- 
+  else: 
+    print(f'Nope! {letter} is not in this word.')
 
-#creates the dashes with the length of the word
 
+def get_guesses_remaining():
+  return wrong_choices_allowed - len(guessed_letters)
+
+def won():
+  return return_word().replace(' ', '') == word
 
 #main loop to play game. work in progress
 letter = ''
 while letter != "exit":
+  return_word()
   display_word()
-  print('Guess all the correct letters to win? You will be allowed 10 wrong choices before you lose the game')
+  print(f'Guess all the correct letters to win? You have {get_guesses_remaining()} guesses before you lose the game. Type exit to end game early.')
   letter = input("Choose a letter: ")
   guessed(letter)
   print('These are your guessed letters ' + str(guessed_letters))
   #print('You have ' + str(counter) + ' guesses left.')
-  check_letter(letter)
+  check_letter(letter) 
+  if won():
+    print('You won!')
+  if get_guesses_remaining() > 0:
+    continue
+
+  if won():
+    print('You won!')
+  else:
+    print(f'You lose! The word was {word}')
+    exit
 
